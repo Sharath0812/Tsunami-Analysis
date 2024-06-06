@@ -1,0 +1,927 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Task schemaVersion="5.4">
+    <!-- NOTE: path diagram became available in 13.2 -->
+    <Registration>
+        <Name>Factor Analysis</Name>
+        <Description>Perform a factor analysis with a variety of methods and rotations.</Description>
+        <GUID>83c5c7c6-c7d2-4e18-9f60-4e5f1777c97f</GUID>
+        <Procedures>FACTOR</Procedures>
+        <Version>3.8</Version>
+        <Links>
+            <Link href="http://documentation.sas.com/?softwareId=STUDIOMID&amp;softwareVersion=3.8&amp;softwareContextId=tasks&amp;requestor=inapp">SAS Studio Task Reference Guide</Link>
+            <Link href=""/>
+            <Link href=""/>
+            <Link href="http://documentation.sas.com/?softwareId=ANMVA&amp;softwareVersion=3.8_15.1&amp;softwareContextId=proc_factor&amp;requestor=inapp">The FACTOR Procedure</Link>
+            <Link href=""/>
+            <Link href=""/>
+            <Link href="http://support.sas.com/training/studio">SAS Tutorials</Link>
+        </Links>
+    </Registration>
+    <Metadata>
+        <DataSources>
+            <DataSource name="dataset" where="true">
+                <Roles>
+                    <Role
+                        exclude="partialVariables,freqVariable,weightVariable,byVariables"
+                        maxVars="0" minVars="2" name="analysisVariables"
+                        order="true" type="N">Analysis variables:</Role>
+                    <Role
+                        exclude="analysisVariables,freqVariable,weightVariable,byVariables"
+                        maxVars="0" minVars="0" name="partialVariables" type="N">Variables to partial out:</Role>
+                    <Role
+                        exclude="analysisVariables,partialVariables,weightVariable,byVariables"
+                        maxVars="1" minVars="0" name="freqVariable" type="N">Frequency count:</Role>
+                    <Role
+                        exclude="analysisVariables,partialVariables,freqVariable,byVariables"
+                        maxVars="1" minVars="0" name="weightVariable" type="N">Weight:</Role>
+                    <Role
+                        exclude="analysisVariables,partialVariables,freqVariable,weightVariable"
+                        maxVars="0" minVars="0" name="byVariables"
+                        order="true" type="A">Group analysis by:</Role>
+                </Roles>
+            </DataSource>
+        </DataSources>
+        <Options>
+            <Option inputType="string" name="dataTab">DATA</Option>
+            <Option inputType="string" name="optionsTab">OPTIONS</Option>
+            <Option inputType="string" name="dataGroup">DATA</Option>
+            <Option inputType="string" name="rolesGroup">ROLES</Option>
+            <Option inputType="string" name="otherRolesGroup">ADDITIONAL ROLES</Option>
+            <Option inputType="string" name="methodsGroup">METHODS</Option>
+            <Option defaultValue="analyzeCorr" inputType="combobox" name="analyze">Analyze:</Option>
+            <Option defaultValue="analyzeCorr" inputType="combobox" name="corrOnlyAnalyze">Analyze:</Option>
+            <Option inputType="string" name="analyzeCov">Covariances</Option>
+            <Option inputType="string" name="analyzeCorr">Correlations</Option>
+            <Option defaultValue="1" inputType="checkbox" name="intercept">Correct the covariances or correlations for the means</Option>
+            <Option inputType="string" name="extractionGroup">Factor Extraction</Option>
+            <Option defaultValue="1" inputType="checkbox" name="useCommonFactorMethods">Show only common extraction methods</Option>
+            <Option defaultValue="princompMethod" inputType="combobox" name="allFactorMethodsCombo">Factor extraction method:</Option>
+            <Option defaultValue="princompMethod" inputType="combobox" name="commonFactorMethodsCombo">Factor extraction method:</Option>
+            <Option inputType="string" name="alphaMethod">Alpha factor analysis</Option>
+            <Option inputType="string" name="harrisMethod">Harris component analysis</Option>
+            <Option inputType="string" name="imageMethod">Image component analysis</Option>
+            <Option inputType="string" name="mlMethod">Maximum likelihood</Option>
+            <Option inputType="string" name="princompMethod">Principal component analysis</Option>
+            <Option inputType="string" name="prinitMethod">Iterated principal factor analysis</Option>
+            <Option inputType="string" name="ulsMethod">Unweighted least squares factor analysis</Option>
+            <Option inputType="string" name="extractionDetailsGroup">Details</Option>
+            <Option inputType="string" name="rotationGroup">Rotation</Option>
+            <Option defaultValue="noRotation" inputType="combobox"
+                name="rotationMethod" width="200px">Rotation method:</Option>
+            <Option inputType="string" name="noRotation">None</Option>
+            <Option inputType="string" name="biquartimaxRotation">Biquartimax</Option>
+            <Option inputType="string" name="equamaxRotation">Equamax</Option>
+            <Option inputType="string" name="factorParsimaxRotation">Factor parsimax</Option>
+            <Option inputType="string" name="parsimaxRotation">Parsimax</Option>
+            <Option inputType="string" name="quartimaxRotation">Quartimax</Option>
+            <Option inputType="string" name="varimaxRotation">Varimax</Option>
+            <Option inputType="string" name="orthomaxRotation">Orthomax</Option>
+            <Option inputType="string" name="obliqueBiquartiminRotation">Biquartimin</Option>
+            <Option inputType="string" name="obliqueCovariminRotation">Covarimin</Option>
+            <Option inputType="string" name="obliquePromaxRotation">Promax</Option>
+            <Option inputType="string" name="obliqueObliminRotation">Oblimin</Option>
+            <Option inputType="string" name="obliqueQuartiminRotation">Quartimin</Option>
+            <Option indent="1" inputType="string" name="rotationInstruction">Select type of rotation:</Option>
+            <Option defaultValue="1" indent="1" inputType="radio"
+                name="orthogonalRotationChoice" variable="rotationType">Orthogonal rotation</Option>
+            <Option indent="1" inputType="radio"
+                name="obliqueRotationChoice" variable="rotationType">Oblique rotation</Option>
+            <Option defaultValue="varimaxRotation" indent="1"
+                inputType="combobox" name="prerotationMethod" width="200px">Prerotation method for promax rotation:</Option>
+            <Option indent="2" inputType="string" name="prerotationInstruction">Select type of rotation:</Option>
+            <Option defaultValue="1" indent="2" inputType="radio"
+                name="orthogonalPrerotationChoice" variable="prerotationType">Orthogonal rotation</Option>
+            <Option indent="2" inputType="radio"
+                name="obliquePrerotationChoice" variable="prerotationType">Oblique rotation</Option>
+            <Option inputType="string" name="rotationDetailsGroup">Details</Option>
+            <Option defaultValue="normKaiser" inputType="combobox" name="normMethod">Method to normalize factor pattern rows:</Option>
+            <Option inputType="string" name="normKaiser">Kaiser's normalization</Option>
+            <Option inputType="string" name="normWeight">Cureton-Mulaik's normalization</Option>
+            <Option inputType="string" name="normCov">Rescale to represent covariances</Option>
+            <Option inputType="string" name="normNone">None</Option>
+            <Option defaultValue="0" inputType="checkbox" name="useMaxRiter">Specify the maximum number of rotation cycles</Option>
+            <Option decimalPlaces="0" defaultValue="100" indent="1"
+                inputType="numbertext"
+                invalidMessage="Enter a number greater than 0 for the maximum number of rotation cycles"
+                maxValue="999999999" minValue="1"
+                missingMessage="Enter a number greater than 0 for the maximum number of rotation cycles"
+                name="maxRiter"
+                promptMessage="Enter a number greater than 0 for the maximum number of rotation cycles"
+                rangeMessage="Enter a number greater than 0 for the maximum number of rotation cycles"
+                required="true" width="100px">Maximum number of rotation cycles:</Option>
+            <Option defaultValue="ncomp_All" inputType="combobox"
+                name="ncomp" width="100px">Number of factors:</Option>
+            <Option inputType="string" name="ncomp_1">1</Option>
+            <Option inputType="string" name="ncomp_2">2</Option>
+            <Option inputType="string" name="ncomp_3">3</Option>
+            <Option inputType="string" name="ncomp_4">4</Option>
+            <Option inputType="string" name="ncomp_5">5</Option>
+            <Option inputType="string" name="ncomp_All">All</Option>
+            <Option inputType="string" name="ncompSpecify">Use custom value</Option>
+            <Option decimalPlaces="0" defaultValue="2" increment="1"
+                indent="1" inputType="numstepper"
+                invalidMessage="Enter an integer for the number of factors that is greater than zero and less or equal to the number of analysis variables"
+                maxValue="999999999" minValue="1"
+                missingMessage="Enter an integer for the number of factors that is greater than zero and less or equal to the number of analysis variables"
+                name="ncompValue"
+                promptMessage="Enter an integer for the number of factors that is greater than zero and less or equal to the number of analysis variables"
+                rangeMessage="Enter an integer for the number of factors that is greater than zero and less or equal to the number of analysis variables"
+                required="true" width="75px">Custom number of factors:</Option>
+            <Option inputType="checkbox" name="usePrefix">Specify a prefix to label the factors</Option>
+            <Option defaultValue="Fact" indent="1"
+                inputType="validationtext"
+                invalidMessage="Enter a valid SAS name for the prefix of the factor names"
+                missingMessage="Enter a valid SAS name for the prefix of the factor names"
+                name="prefix"
+                promptMessage="Enter a valid SAS name for the prefix of the factor names"
+                regExp=".{1,30}" required="true" width="200px">Factor prefix:</Option>
+            <Option inputType="string" name="communalitiesGroup">Prior Communalities</Option>
+            <Option defaultValue="defaultPriors" inputType="combobox" name="priors">Estimation method for prior communalities:</Option>
+            <Option defaultValue="smcPriors" inputType="combobox" name="smcOnlyPriors">Estimation method for prior communalities:</Option>
+            <Option inputType="string" name="defaultPriors">Default</Option>
+            <Option inputType="string" name="asmcPriors">Adjusted squared multiple correlation</Option>
+            <Option inputType="string" name="maxPriors">Maximum absolute correlation</Option>
+            <Option inputType="string" name="onePriors">Set to 1.0</Option>
+            <Option inputType="string" name="randomPriors">Set to a random number between 0 and 1</Option>
+            <Option inputType="string" name="smcPriors">Squared multiple correlation</Option>
+            <Option inputType="checkbox" name="heywood">Heywood cases: Set communalities to 1 that are greater than 1</Option>
+            <Option defaultValue="0" inputType="checkbox" name="specifyMaxiter">Specify the maximum number of iterations</Option>
+            <Option decimalPlaces="0" defaultValue="30" indent="1"
+                inputType="numbertext"
+                invalidMessage="Enter a number greater than or equal to 0 for the maximum number of iterations"
+                maxValue="999999999" minValue="0"
+                missingMessage="Enter a number greater than or equal to 0 for the maximum number of iterations"
+                name="maxiter"
+                promptMessage="Enter a number greater than or equal to 0 for the maximum number of iterations"
+                rangeMessage="Enter a number greater than or equal to 0 for the maximum number of iterations"
+                required="true" width="100px">Maximum number of iterations:</Option>
+            <Option indent="1" inputType="checkbox" name="useGamma">Specify the orthomax weight</Option>
+            <Option decimalPlaces="0,15" defaultValue="1" indent="1"
+                inputType="numbertext"
+                invalidMessage="Enter a number for the orthomax weight"
+                maxValue="9999999999" minValue="-9999999999"
+                missingMessage="Enter a number for the orthomax weight"
+                name="gamma"
+                promptMessage="Enter a number for the orthomax weight"
+                rangeMessage="Enter a number for the orthomax weight"
+                required="true" width="100px">Orthomax weight:</Option>
+            <Option indent="1" inputType="checkbox" name="usePromaxPower">Specify a power for promax rotation</Option>
+            <Option decimalPlaces="0" defaultValue="3" indent="2"
+                inputType="numbertext"
+                invalidMessage="Enter a value for the power for promax rotation that is equal to or greater than 1"
+                maxValue="9999999999" minValue="1"
+                missingMessage="Enter a value for the power for promax rotation that is equal to or greater than 1"
+                name="promaxPower"
+                promptMessage="Enter a value for the power for promax rotation that is equal to or greater than 1"
+                rangeMessage="Enter a number for the power for promax rotation that is equal to or greater than 1"
+                required="true" width="100px">Power for promax rotation:</Option>
+            <Option indent="1" inputType="checkbox" name="useTau">Specify the oblimin weight</Option>
+            <Option decimalPlaces="0,15" defaultValue="0" indent="1"
+                inputType="numbertext"
+                invalidMessage="Enter a number for oblimin weight"
+                maxValue="9999999999" minValue="-999999999"
+                missingMessage="Enter a number for oblimin weight"
+                name="tau"
+                promptMessage="Enter a number for oblimin weight"
+                rangeMessage="Enter a number  for oblimin weight"
+                required="true" width="100px">Oblimin weight:</Option>
+            <Option inputType="string" name="statisticsGroup">STATISTICS</Option>
+            <Option defaultValue="defaultStatsChoice"
+                inputType="combobox" name="statsCombo">Select statistics to display:</Option>
+            <Option inputType="string" name="defaultStatsChoice">Default statistics</Option>
+            <Option inputType="string" name="customStatsChoice">Default and additional statistics</Option>
+            <Option indent="1" inputType="string" name="additionalStatsLabel">Additional Statistics</Option>
+            <Option indent="1" inputType="checkbox" name="simpleStats">Descriptive statistics</Option>
+            <Option indent="1" inputType="checkbox" name="corrs">Correlations</Option>
+            <Option indent="1" inputType="checkbox" name="residualCorrs">Residual correlations</Option>
+            <Option indent="1" inputType="checkbox" name="eigenvectors">Eigenvectors</Option>
+            <Option indent="1" inputType="checkbox" name="scoreCoeffs">Factor scoring coefficients</Option>
+            <Option indent="1" inputType="checkbox" name="msa">Kaiser's measure of sampling adequacy</Option>
+            <Option inputType="checkbox" name="reorder">Display factor loadings with largest absolute loading first</Option>
+            <Option inputType="checkbox" name="fuzz">Do not display small correlations and factor loadings</Option>
+            <Option decimalPlaces="0,15" defaultValue="0.3" indent="1"
+                inputType="numbertext"
+                invalidMessage="Enter a number greater than zero for the minimum factor loading to display"
+                minValue="0.000000000001"
+                missingMessage="Enter a number greater than zero for the minimum factor loading to display"
+                name="fuzzValue"
+                promptMessage="Enter a number greater than zero for the minimum factor loading to display"
+                rangeMessage="Enter a number greater than zero for the minimum factor loading to display"
+                required="true" width="75px">Minimum factor loading or correlation to display:</Option>
+            <Option indent="1" inputType="checkbox" name="se">Standard errors</Option>
+            <Option indent="1" inputType="checkbox" name="confInt">Confidence interval</Option>
+            <Option defaultValue="confidence95" indent="2"
+                inputType="combobox" name="confidence" width="100px">Confidence level:</Option>
+            <Option inputType="string" name="confidence90">90%</Option>
+            <Option inputType="string" name="confidence95">95%</Option>
+            <Option inputType="string" name="confidence99">99%</Option>
+            <Option inputType="string" name="confidenceSpecify">Use custom value</Option>
+            <Option decimalPlaces="0,15" defaultValue="95" indent="3"
+                inputType="numbertext"
+                invalidMessage="Enter a number greater than zero and less than 100 for the confidence level"
+                maxValue="99.999999999" minValue="0.00000000001"
+                missingMessage="Enter a number greater than zero and less than 100 for the confidence level"
+                name="confidenceValue"
+                promptMessage="Enter a number greater than zero and less than 100 for the confidence level"
+                rangeMessage="Enter a number greater than zero and less than 100 for the confidence level"
+                required="true" width="75px">Custom confidence level:</Option>
+            <Option inputType="string" name="plotsGroup">PLOTS</Option>
+            <Option defaultValue="defaultPlotChoice"
+                inputType="combobox" name="plotsCombo">Select plots to display:</Option>
+            <Option inputType="string" name="defaultPlotChoice">Default plots</Option>
+            <Option inputType="string" name="customPlotChoice">Default and additional plots</Option>
+            <Option inputType="string" name="noplotsCombo">No plots</Option>
+            <Option defaultValue="1" indent="1" inputType="checkbox" name="screePlot">Eigenvalue by component (Scree plot)</Option>
+            <Option defaultValue="1" indent="1" inputType="checkbox" name="pathDiagram">Path diagram</Option>
+            <Option defaultValue="0" indent="2" inputType="checkbox" name="useDiagramCriterion">Specify the criterion to display paths</Option>
+            <Option decimalPlaces="0,15" defaultValue="0.3" indent="3"
+                inputType="numbertext"
+                invalidMessage="Enter a number greater than zero for the minimum factor loading to display in the path diagram"
+                minValue="0.000000000001"
+                missingMessage="Enter a number greater than zero for the minimum factor loading to display in the path diagram"
+                name="diagramFuzzValue"
+                promptMessage="Enter a number greater than zero for the minimum factor loading to display in the path diagram"
+                rangeMessage="Enter a number greater than zero for the minimum factor loading to display in the path diagram"
+                required="true" width="75px">Minimum factor loading value to display:</Option>
+            <Option defaultValue="alpha_05" indent="3"
+                inputType="combobox" name="alpha" width="100px">Minimum significance level to display:</Option>
+            <Option inputType="string" name="alpha_10">0.10</Option>
+            <Option inputType="string" name="alpha_05">0.05</Option>
+            <Option inputType="string" name="alpha_01">0.01</Option>
+            <Option inputType="string" name="alphaSpecify">Use custom value</Option>
+            <Option indent="3" inputType="numbertext"
+                invalidMessage="Enter a number greater than zero and less than 1 for the significance level"
+                maxValue="0.99999999999" minValue="0.00000000001"
+                missingMessage="Enter a number greater than zero and less than 1 for the significance level"
+                name="alphaValue"
+                promptMessage="Enter a number greater than zero and less than 1 for the significance level"
+                rangeMessage="Enter a number greater than zero and less than 1 for the significance level"
+                required="true" width="100px">Custom significance level:</Option>
+            <Option indent="1" inputType="checkbox" name="unrotatedLoadingsPlot">Unrotated loadings plots</Option>
+            <Option indent="1" inputType="checkbox" name="rotatedLoadingsPlot">Rotated loadings plots</Option>
+            <Option indent="1" inputType="checkbox" name="prerotatedLoadingsPlot">Prerotated loadings plots</Option>
+            <Option inputType="string" name="loadingsPlotOptions">Options for Loadings Plots</Option>
+            <Option defaultValue="ncomp_3" inputType="combobox"
+                name="ncompToPlot" width="100px">Number of factors to plot:</Option>
+            <Option decimalPlaces="0" defaultValue="2" increment="1"
+                indent="1" inputType="numstepper"
+                invalidMessage="Enter an integer for the number of factors to plot that is between 2 and 32767, inclusive"
+                maxValue="32767" minValue="2"
+                missingMessage="Enter an integer for the number of factors to plot that is between 2 and 32767, inclusive"
+                name="ncompToPlotValue"
+                promptMessage="Enter an integer for the number of factors to plot that is between 2 and 32767, inclusive"
+                rangeMessage="Enter an integer for the number of factors to plot that is between 2 and 32767, inclusive"
+                required="true" width="75px">Custom number of factors to plot:</Option>
+            <Option inputType="checkbox" name="vectorPlot">Add vectors to loadings plots</Option>
+            <Option inputType="checkbox" name="patternPlot">Patterns for pairs of components</Option>
+            <Option inputType="string" name="outputTab">OUTPUT</Option>
+            <Option inputType="string" name="outputGroup">OUTPUT DATA SETS</Option>
+            <Option inputType="checkbox" name="scoresDS">Create factor scores data set</Option>
+            <Option defaultValue="work.Factor_scores" indent="1"
+                inputType="outputdata" name="scoresDSName"
+                required="true" unique="true">Data set name:</Option>
+            <Option inputType="checkbox" name="statDS">Create statistics data set</Option>
+            <Option defaultValue="work.Factor_stats" indent="1"
+                inputType="outputdata" name="statDSName" required="true" unique="true">Data set name:</Option>
+        </Options>
+    </Metadata>
+    <UI>
+        <Container option="dataTab">
+            <Group open="true" option="dataGroup">
+                <DataItem data="dataset"/>
+            </Group>
+            <Group open="true" option="rolesGroup">
+                <RoleItem role="analysisVariables"/>
+            </Group>
+            <Group option="otherRolesGroup">
+                <RoleItem role="partialVariables"/>
+                <RoleItem role="freqVariable"/>
+                <RoleItem role="weightVariable"/>
+                <RoleItem role="byVariables"/>
+            </Group>
+        </Container>
+        <Container option="optionsTab">
+            <Group open="true" option="methodsGroup">
+                <Group open="true" option="extractionGroup">
+                    <OptionChoice option="useCommonFactorMethods"/>
+                    <OptionChoice option="commonFactorMethodsCombo">
+                        <OptionItem option="prinitMethod"/>
+                        <OptionItem option="mlMethod"/>
+                        <OptionItem option="princompMethod"/>
+                    </OptionChoice>
+                    <OptionChoice option="allFactorMethodsCombo">
+                        <OptionItem option="alphaMethod"/>
+                        <OptionItem option="harrisMethod"/>
+                        <OptionItem option="imageMethod"/>
+                        <OptionItem option="prinitMethod"/>
+                        <OptionItem option="mlMethod"/>
+                        <OptionItem option="princompMethod"/>
+                        <OptionItem option="ulsMethod"/>
+                    </OptionChoice>
+                    <OptionChoice option="ncomp">
+                        <OptionItem option="ncomp_1"/>
+                        <OptionItem option="ncomp_2"/>
+                        <OptionItem option="ncomp_3"/>
+                        <OptionItem option="ncomp_4"/>
+                        <OptionItem option="ncomp_5"/>
+                        <OptionItem option="ncomp_All"/>
+                        <OptionItem option="ncompSpecify"/>
+                    </OptionChoice>
+                    <OptionItem option="ncompValue"/>
+                    <Group option="extractionDetailsGroup">
+                        <OptionChoice option="priors">
+                            <OptionItem option="defaultPriors"/>
+                            <OptionItem option="smcPriors"/>
+                            <OptionItem option="asmcPriors"/>
+                            <OptionItem option="onePriors"/>
+                            <OptionItem option="maxPriors"/>
+                            <OptionItem option="randomPriors"/>
+                        </OptionChoice>
+                        <OptionChoice option="smcOnlyPriors">
+                            <OptionItem option="smcPriors"/>
+                        </OptionChoice>
+                        <OptionChoice option="analyze">
+                            <OptionItem option="analyzeCorr"/>
+                            <OptionItem option="analyzeCov"/>
+                        </OptionChoice>
+                        <OptionChoice option="corrOnlyAnalyze">
+                            <OptionItem option="analyzeCorr"/>
+                        </OptionChoice>
+                        <OptionItem option="intercept"/>
+                        <OptionItem option="usePrefix"/>
+                        <OptionItem option="prefix"/>
+                        <OptionItem option="heywood"/>
+                        <OptionItem option="specifyMaxiter"/>
+                        <OptionItem option="maxiter"/>
+                    </Group>
+                </Group>
+                <Group open="true" option="rotationGroup">
+                    <OptionChoice option="rotationMethod">
+                        <OptionItem option="biquartimaxRotation"/>
+                        <OptionItem option="obliqueBiquartiminRotation"/>
+                        <OptionItem option="obliqueCovariminRotation"/>
+                        <OptionItem option="equamaxRotation"/>
+                        <OptionItem option="factorParsimaxRotation"/>
+                        <OptionItem option="obliqueObliminRotation"/>
+                        <OptionItem option="orthomaxRotation"/>
+                        <OptionItem option="parsimaxRotation"/>
+                        <OptionItem option="obliquePromaxRotation"/>
+                        <OptionItem option="quartimaxRotation"/>
+                        <OptionItem option="obliqueQuartiminRotation"/>
+                        <OptionItem option="varimaxRotation"/>
+                        <OptionItem option="noRotation"/>
+                    </OptionChoice>
+                    <OptionItem option="rotationInstruction"/>
+                    <OptionItem option="orthogonalRotationChoice"/>
+                    <OptionItem option="obliqueRotationChoice"/>
+                    <OptionChoice option="prerotationMethod">
+                        <OptionItem option="biquartimaxRotation"/>
+                        <OptionItem option="obliqueBiquartiminRotation"/>
+                        <OptionItem option="obliqueCovariminRotation"/>
+                        <OptionItem option="equamaxRotation"/>
+                        <OptionItem option="factorParsimaxRotation"/>
+                        <OptionItem option="obliqueObliminRotation"/>
+                        <OptionItem option="orthomaxRotation"/>
+                        <OptionItem option="parsimaxRotation"/>
+                        <OptionItem option="quartimaxRotation"/>
+                        <OptionItem option="obliqueQuartiminRotation"/>
+                        <OptionItem option="varimaxRotation"/>
+                        <OptionItem option="noRotation"/>
+                    </OptionChoice>
+                    <OptionItem option="prerotationInstruction"/>
+                    <OptionItem option="orthogonalPrerotationChoice"/>
+                    <OptionItem option="obliquePrerotationChoice"/>
+                    <OptionItem option="useGamma"/>
+                    <OptionItem option="gamma"/>
+                    <OptionItem option="usePromaxPower"/>
+                    <OptionItem option="promaxPower"/>
+                    <OptionItem option="useTau"/>
+                    <OptionItem option="tau"/>
+                    <Group option="rotationDetailsGroup">
+                        <OptionChoice option="normMethod">
+                            <OptionItem option="normKaiser"/>
+                            <OptionItem option="normWeight"/>
+                            <OptionItem option="normCov"/>
+                            <OptionItem option="normNone"/>
+                        </OptionChoice>
+                        <OptionItem option="useMaxRiter"/>
+                        <OptionItem option="maxRiter"/>
+                    </Group>
+                </Group>
+            </Group>
+            <Group open="true" option="statisticsGroup">
+                <OptionChoice option="statsCombo">
+                    <OptionItem option="defaultStatsChoice"/>
+                    <OptionItem option="customStatsChoice"/>
+                </OptionChoice>
+                <OptionItem option="simpleStats"/>
+                <OptionItem option="corrs"/>
+                <OptionItem option="residualCorrs"/>
+                <OptionItem option="eigenvectors"/>
+                <OptionItem option="scoreCoeffs"/>
+                <OptionItem option="msa"/>
+                <OptionItem option="confInt"/>
+                <OptionChoice option="confidence">
+                    <OptionItem option="confidence90"/>
+                    <OptionItem option="confidence95"/>
+                    <OptionItem option="confidence99"/>
+                    <OptionItem option="confidenceSpecify"/>
+                </OptionChoice>
+                <OptionItem option="confidenceValue"/>
+                <OptionItem option="se"/>
+                <OptionItem option="reorder"/>
+                <OptionItem option="fuzz"/>
+                <OptionItem option="fuzzValue"/>
+            </Group>
+            <Group open="true" option="plotsGroup">
+                <OptionChoice option="plotsCombo">
+                    <OptionItem option="defaultPlotChoice"/>
+                    <OptionItem option="customPlotChoice"/>
+                    <OptionItem option="noplotsCombo"/>
+                </OptionChoice>
+                <OptionItem option="screePlot"/>
+                <OptionItem option="unrotatedLoadingsPlot"/>
+                <OptionItem option="prerotatedLoadingsPlot"/>
+                <OptionItem option="rotatedLoadingsPlot"/>
+                <OptionItem option="pathDiagram"/>
+                <OptionItem option="useDiagramCriterion"/>
+                <OptionItem option="diagramFuzzValue"/>
+                <OptionChoice option="alpha">
+                    <OptionItem option="alpha_10"/>
+                    <OptionItem option="alpha_05"/>
+                    <OptionItem option="alpha_01"/>
+                    <OptionItem option="alphaSpecify"/>
+                </OptionChoice>
+                <OptionItem option="alphaValue"/>
+                <Group open="true" option="loadingsPlotOptions">
+                    <OptionChoice option="ncompToPlot">
+                        <OptionItem option="ncomp_2"/>
+                        <OptionItem option="ncomp_3"/>
+                        <OptionItem option="ncomp_4"/>
+                        <OptionItem option="ncomp_5"/>
+                        <OptionItem option="ncompSpecify"/>
+                    </OptionChoice>
+                    <OptionItem option="ncompToPlotValue"/>
+                    <OptionItem option="vectorPlot"/>
+                </Group>
+            </Group>
+        </Container>
+        <Container option="outputTab">
+            <Group open="true" option="outputGroup">
+                <OptionItem option="scoresDS"/>
+                <OptionItem option="scoresDSName"/>
+                <OptionItem option="statDS"/>
+                <OptionItem option="statDSName"/>
+            </Group>
+        </Container>
+    </UI>
+    <Dependencies>
+        <Dependency condition="($useCommonFactorMethods == 1)">
+            <Target action="show" conditionResult="true" option="commonFactorMethodsCombo"/>
+            <Target action="hide" conditionResult="false" option="commonFactorMethodsCombo"/>
+        </Dependency>
+        <Dependency condition=" !($useCommonFactorMethods == 1) ">
+            <Target action="show" conditionResult="true" option="allFactorMethodsCombo"/>
+            <Target action="hide" conditionResult="false" option="allFactorMethodsCombo"/>
+        </Dependency>
+        <Dependency condition=" (             (             $useCommonFactorMethods == 1 &amp;&amp;             ($commonFactorMethodsCombo=='mlMethod' || $commonFactorMethodsCombo=='prinitMethod' )             ) ||             ( !($useCommonFactorMethods == 1) &amp;&amp;             ($allFactorMethodsCombo=='mlMethod' || $allFactorMethodsCombo=='prinitMethod' ||              $allFactorMethodsCombo=='alphaMethod' || $allFactorMethodsCombo=='ulsMethod')             )             ) ">
+            <Target action="show" conditionResult="true" option="specifyMaxiter"/>
+            <Target action="hide" conditionResult="false" option="specifyMaxiter"/>
+        </Dependency>
+        <Dependency condition="             (             (             $useCommonFactorMethods == 1 &amp;&amp;             ($commonFactorMethodsCombo=='mlMethod' || $commonFactorMethodsCombo=='prinitMethod' )             ) ||             ( !($useCommonFactorMethods == 1) &amp;&amp;             ($allFactorMethodsCombo=='mlMethod' || $allFactorMethodsCombo=='prinitMethod' ||              $allFactorMethodsCombo=='alphaMethod' || $allFactorMethodsCombo=='ulsMethod')             )             ) &amp;&amp;($specifyMaxiter=='1')">
+            <Target action="show" conditionResult="true" option="maxiter"/>
+            <Target action="hide" conditionResult="false" option="maxiter"/>
+        </Dependency>
+        <!-- No choice is allowed for priors for Harris and Image analysis; the default is SMC -->
+        <Dependency condition="!($allFactorMethodsCombo &amp;&amp;             ($allFactorMethodsCombo=='harrisMethod' || $allFactorMethodsCombo=='imageMethod'))">
+            <Target action="show" conditionResult="true" option="priors"/>
+            <Target action="hide" conditionResult="false" option="priors"/>
+            <!-- reversed show/hide logic -->
+            <Target action="hide" conditionResult="true" option="smcOnlyPriors"/>
+            <Target action="show" conditionResult="false" option="smcOnlyPriors"/>
+        </Dependency>
+        <Dependency condition="($allFactorMethodsCombo &amp;&amp;              ($allFactorMethodsCombo=='princompMethod' ||               $allFactorMethodsCombo=='prinitMethod' ||               $allFactorMethodsCombo=='imageMethod' ||               $allFactorMethodsCombo=='ulsMethod'              )              ) ||             ($commonFactorMethodsCombo &amp;&amp;              ($commonFactorMethodsCombo=='princompMethod' ||               $commonFactorMethodsCombo=='prinitMethod'                           )                                       )">
+            <Target action="show" conditionResult="true" option="analyze"/>
+            <Target action="hide" conditionResult="false" option="analyze"/>
+            <!-- reversed show/hide logic -->
+            <Target action="hide" conditionResult="true" option="corrOnlyAnalyze"/>
+            <Target action="show" conditionResult="false" option="corrOnlyAnalyze"/>
+        </Dependency>
+        <Dependency condition="($statsCombo=='customStatsChoice' &amp;&amp;              (             ($commonFactorMethodsCombo &amp;&amp; $commonFactorMethodsCombo=='mlMethod') ||             ($allFactorMethodsCombo &amp;&amp; $allFactorMethodsCombo=='mlMethod')             )               )">
+            <Target action="show" conditionResult="true" option="se"/>
+            <Target action="hide" conditionResult="false" option="se"/>
+            <Target action="show" conditionResult="true" option="confInt"/>
+            <Target action="hide" conditionResult="false" option="confInt"/>
+        </Dependency>
+        <Dependency condition="($statsCombo=='customStatsChoice')">
+            <Target action="show" conditionResult="true" option="fuzz"/>
+            <Target action="hide" conditionResult="false" option="fuzz"/>
+        </Dependency>
+        <Dependency condition="($statsCombo=='customStatsChoice' &amp;&amp; $fuzz == '1')">
+            <Target action="show" conditionResult="true" option="fuzzValue"/>
+            <Target action="hide" conditionResult="false" option="fuzzValue"/>
+        </Dependency>
+        <Dependency condition="($statsCombo=='customStatsChoice' &amp;&amp;              (             ($commonFactorMethodsCombo &amp;&amp; $commonFactorMethodsCombo=='mlMethod') ||             ($allFactorMethodsCombo &amp;&amp; $allFactorMethodsCombo=='mlMethod')             ) &amp;&amp; $confInt == '1')">
+            <Target action="show" conditionResult="true" option="confidence"/>
+            <Target action="hide" conditionResult="false" option="confidence"/>
+        </Dependency>
+        <Dependency condition="($statsCombo=='customStatsChoice' &amp;&amp;             (             ($commonFactorMethodsCombo &amp;&amp; $commonFactorMethodsCombo=='mlMethod') ||             ($allFactorMethodsCombo &amp;&amp; $allFactorMethodsCombo=='mlMethod')             ) &amp;&amp; $confInt == '1' &amp;&amp; $confidence == 'confidenceSpecify')">
+            <Target action="show" conditionResult="true" option="confidenceValue"/>
+            <Target action="hide" conditionResult="false" option="confidenceValue"/>
+        </Dependency>
+        <Dependency condition="              ($commonFactorMethodsCombo &amp;&amp;                  ($commonFactorMethodsCombo=='mlMethod' || $commonFactorMethodsCombo=='prinitMethod')             ) ||                     ($allFactorMethodsCombo &amp;&amp;                  ($allFactorMethodsCombo=='alphaMethod' || $allFactorMethodsCombo=='mlMethod' ||                  $allFactorMethodsCombo=='prinitMethod' || $allFactorMethodsCombo=='ulsMethod')             ) ">
+            <Target action="show" conditionResult="true" option="heywood"/>
+            <Target action="hide" conditionResult="false" option="heywood"/>
+        </Dependency>
+        <Dependency condition="($usePrefix == '1')">
+            <Target action="show" conditionResult="true" option="prefix"/>
+            <Target action="hide" conditionResult="false" option="prefix"/>
+        </Dependency>
+        <Dependency condition="!($rotationMethod == 'noRotation')">
+            <Target action="show" conditionResult="true" option="rotationDetailsGroup"/>
+            <Target action="hide" conditionResult="false" option="rotationDetailsGroup"/>
+        </Dependency>
+        <Dependency condition="(!($rotationMethod == 'noRotation') &amp;&amp; !($rotationMethod=='obliquePromaxRotation'))">
+            <Target action="show" conditionResult="true" option="useMaxRiter"/>
+            <Target action="hide" conditionResult="false" option="useMaxRiter"/>
+        </Dependency>
+        <Dependency condition="(!($rotationMethod == 'noRotation') &amp;&amp;!($rotationMethod=='obliquePromaxRotation') &amp;&amp; $useMaxRiter == 1)">
+            <Target action="show" conditionResult="true" option="maxRiter"/>
+            <Target action="hide" conditionResult="false" option="maxRiter"/>
+        </Dependency>
+        <Dependency condition="($rotationMethod == 'obliquePromaxRotation')">
+            <Target action="show" conditionResult="true" option="prerotationMethod"/>
+            <Target action="hide" conditionResult="false" option="prerotationMethod"/>
+        </Dependency>
+        <Dependency condition="($rotationMethod=='orthomaxRotation' ||              ($rotationMethod=='obliquePromaxRotation' &amp;&amp; $prerotationMethod == 'orthomaxRotation'))">
+            <Target action="show" conditionResult="true" option="useGamma"/>
+            <Target action="hide" conditionResult="false" option="useGamma"/>
+        </Dependency>
+        <Dependency condition="($rotationMethod=='orthomaxRotation' ||              ($rotationMethod=='obliquePromaxRotation' &amp;&amp; $prerotationMethod == 'orthomaxRotation')) &amp;&amp; $useGamma == '1'">
+            <Target action="show" conditionResult="true" option="gamma"/>
+            <Target action="hide" conditionResult="false" option="gamma"/>
+        </Dependency>
+        <Dependency condition="($rotationMethod=='obliquePromaxRotation')">
+            <Target action="show" conditionResult="true" option="usePromaxPower"/>
+            <Target action="hide" conditionResult="false" option="usePromaxPower"/>
+        </Dependency>
+        <Dependency condition="($rotationMethod=='obliquePromaxRotation' &amp;&amp; $usePromaxPower == '1')">
+            <Target action="show" conditionResult="true" option="promaxPower"/>
+            <Target action="hide" conditionResult="false" option="promaxPower"/>
+        </Dependency>
+        <Dependency condition="($rotationMethod=='obliqueObliminRotation' ||              ($rotationMethod=='obliquePromaxRotation' &amp;&amp; $prerotationMethod == 'obliqueObliminRotation'))">
+            <Target action="show" conditionResult="true" option="useTau"/>
+            <Target action="hide" conditionResult="false" option="useTau"/>
+        </Dependency>
+        <Dependency condition="(($rotationMethod=='obliqueObliminRotation' ||              ($rotationMethod=='obliquePromaxRotation' &amp;&amp; $prerotationMethod == 'obliqueObliminRotation')) &amp;&amp; $useTau == '1')">
+            <Target action="show" conditionResult="true" option="tau"/>
+            <Target action="hide" conditionResult="false" option="tau"/>
+        </Dependency>
+        <Dependency condition="($ncomp=='ncompSpecify')">
+            <Target action="show" conditionResult="true" option="ncompValue"/>
+            <Target action="hide" conditionResult="false" option="ncompValue"/>
+        </Dependency>
+        <Dependency condition="($rotationMethod == 'biquartimaxRotation' ||                         $rotationMethod == 'equamaxRotation' ||                         $rotationMethod == 'factorParsimaxRotation' ||                         $rotationMethod == 'parsimaxRotation' ||                         $rotationMethod == 'quartimaxRotation' ||                         $rotationMethod == 'varimaxRotation')">
+            <Target action="show" conditionResult="true" option="rotationInstruction"/>
+            <Target action="hide" conditionResult="false" option="rotationInstruction"/>
+            <Target action="show" conditionResult="true" option="rotationType"/>
+            <Target action="hide" conditionResult="false" option="rotationType"/>
+        </Dependency>
+        <Dependency condition="$rotationMethod=='obliquePromaxRotation' &amp;&amp;                        ($prerotationMethod == 'biquartimaxRotation' ||                         $prerotationMethod == 'equamaxRotation' ||                         $prerotationMethod == 'factorParsimaxRotation' ||                         $prerotationMethod == 'parsimaxRotation' ||                         $prerotationMethod == 'quartimaxRotation' ||                         $prerotationMethod == 'varimaxRotation')">
+            <Target action="show" conditionResult="true" option="prerotationInstruction"/>
+            <Target action="hide" conditionResult="false" option="prerotationInstruction"/>
+            <Target action="show" conditionResult="true" option="prerotationType"/>
+            <Target action="hide" conditionResult="false" option="prerotationType"/>
+        </Dependency>
+        <Dependency condition="($scoresDS=='1')">
+            <Target action="enable" conditionResult="true" option="scoresDSName"/>
+            <Target action="disable" conditionResult="false" option="scoresDSName"/>
+        </Dependency>
+        <Dependency condition="($statDS=='1')">
+            <Target action="enable" conditionResult="true" option="statDSName"/>
+            <Target action="disable" conditionResult="false" option="statDSName"/>
+        </Dependency>
+        <Dependency condition="($statsCombo=='customStatsChoice')">
+            <Target action="show" conditionResult="true" option="additionalStatsLabel"/>
+            <Target action="hide" conditionResult="false" option="additionalStatsLabel"/>
+            <Target action="show" conditionResult="true" option="simpleStats"/>
+            <Target action="hide" conditionResult="false" option="simpleStats"/>
+            <Target action="show" conditionResult="true" option="corrs"/>
+            <Target action="hide" conditionResult="false" option="corrs"/>
+            <Target action="show" conditionResult="true" option="residualCorrs"/>
+            <Target action="hide" conditionResult="false" option="residualCorrs"/>
+            <Target action="show" conditionResult="true" option="eigenvectors"/>
+            <Target action="hide" conditionResult="false" option="eigenvectors"/>
+            <Target action="show" conditionResult="true" option="scoreCoeffs"/>
+            <Target action="hide" conditionResult="false" option="scoreCoeffs"/>
+            <Target action="show" conditionResult="true" option="msa"/>
+            <Target action="hide" conditionResult="false" option="msa"/>
+            <Target action="show" conditionResult="true" option="reorder"/>
+            <Target action="hide" conditionResult="false" option="reorder"/>
+        </Dependency>
+        <Dependency condition="($plotsCombo=='customPlotChoice')">
+            <Target action="show" conditionResult="true" option="screePlot"/>
+            <Target action="hide" conditionResult="false" option="screePlot"/>
+            <Target action="show" conditionResult="true" option="pathDiagram"/>
+            <Target action="hide" conditionResult="false" option="pathDiagram"/>
+        </Dependency>
+        <Dependency condition="($plotsCombo=='customPlotChoice' &amp;&amp; $pathDiagram == 1)">
+            <Target action="show" conditionResult="true" option="useDiagramCriterion"/>
+            <Target action="hide" conditionResult="false" option="useDiagramCriterion"/>
+        </Dependency>
+        <Dependency condition="($plotsCombo=='customPlotChoice' &amp;&amp;              $pathDiagram == '1' &amp;&amp;              !(              (              ($commonFactorMethodsCombo &amp;&amp; $commonFactorMethodsCombo=='mlMethod') ||             ($allFactorMethodsCombo &amp;&amp; $allFactorMethodsCombo=='mlMethod')              ) &amp;&amp; $se == 1) &amp;&amp;              $useDiagramCriterion == 1 )">
+            <Target action="show" conditionResult="true" option="diagramFuzzValue"/>
+            <Target action="hide" conditionResult="false" option="diagramFuzzValue"/>
+        </Dependency>
+        <Dependency condition="($plotsCombo=='customPlotChoice' &amp;&amp;              $pathDiagram == '1' &amp;&amp;              (             (              ($commonFactorMethodsCombo &amp;&amp; $commonFactorMethodsCombo=='mlMethod') ||             ($allFactorMethodsCombo &amp;&amp; $allFactorMethodsCombo=='mlMethod')              ) &amp;&amp; $se == 1) &amp;&amp;              $useDiagramCriterion == 1              )">
+            <Target action="show" conditionResult="true" option="alpha"/>
+            <Target action="hide" conditionResult="false" option="alpha"/>
+        </Dependency>
+        <Dependency condition="($plotsCombo=='customPlotChoice' &amp;&amp;              $pathDiagram == '1' &amp;&amp;              (             (              ($commonFactorMethodsCombo &amp;&amp; $commonFactorMethodsCombo=='mlMethod') ||             ($allFactorMethodsCombo &amp;&amp; $allFactorMethodsCombo=='mlMethod')              ) &amp;&amp; $se == 1) &amp;&amp;              $useDiagramCriterion == 1 &amp;&amp; $alpha == 'alphaSpecify')">
+            <Target action="show" conditionResult="true" option="alphaValue"/>
+            <Target action="hide" conditionResult="false" option="alphaValue"/>
+        </Dependency>
+        <Dependency condition="($plotsCombo=='customPlotChoice' &amp;&amp;          !(($ncomp == 'ncomp_1') || ($ncomp == 'ncompSpecify' &amp;&amp; $ncompValue == 1)))">
+            <Target action="show" conditionResult="true" option="unrotatedLoadingsPlot"/>
+            <Target action="hide" conditionResult="false" option="unrotatedLoadingsPlot"/>
+        </Dependency>
+        <Dependency condition="($plotsCombo=='customPlotChoice' &amp;&amp;          !($rotationMethod == 'noRotation') &amp;&amp;          !(($ncomp == 'ncomp_1') || ($ncomp == 'ncompSpecify' &amp;&amp; $ncompValue == 1)))">
+            <Target action="show" conditionResult="true" option="rotatedLoadingsPlot"/>
+            <Target action="hide" conditionResult="false" option="rotatedLoadingsPlot"/>
+        </Dependency>
+        <Dependency condition="($plotsCombo=='customPlotChoice' &amp;&amp;          $rotationMethod == 'obliquePromaxRotation' &amp;&amp;          !(($ncomp == 'ncomp_1') || ($ncomp == 'ncompSpecify' &amp;&amp; $ncompValue == 1)))">
+            <Target action="show" conditionResult="true" option="prerotatedLoadingsPlot"/>
+            <Target action="hide" conditionResult="false" option="prerotatedLoadingsPlot"/>
+        </Dependency>
+        <Dependency condition="($unrotatedLoadingsPlot == '1' || $rotatedLoadingsPlot == '1' || $prerotatedLoadingsPlot== '1')">
+            <Target action="show" conditionResult="true" option="loadingsPlotOptions"/>
+            <Target action="hide" conditionResult="false" option="loadingsPlotOptions"/>
+        </Dependency>
+        <Dependency condition="($plotsCombo=='customPlotChoice' &amp;&amp; $ncompToPlot=='ncompSpecify')">
+            <Target action="show" conditionResult="true" option="ncompToPlotValue"/>
+            <Target action="hide" conditionResult="false" option="ncompToPlotValue"/>
+        </Dependency>
+        <!-- This dependency must include the same condition as the one targeting loadingsPlotOptions -->
+        <Dependency condition="             ($unrotatedLoadingsPlot == '1' || $rotatedLoadingsPlot == '1' || $prerotatedLoadingsPlot== '1') &amp;&amp;             ($plotsCombo=='customPlotChoice') &amp;&amp;             (             (                ($rotationMethod == 'biquartimaxRotation' ||                 $rotationMethod == 'equamaxRotation' ||                 $rotationMethod == 'factorParsimaxRotation' ||                 $rotationMethod == 'parsimaxRotation' ||                 $rotationMethod == 'quartimaxRotation' ||                 $rotationMethod == 'varimaxRotation') &amp;&amp;              $rotationType =='orthogonalRotationChoice'              ) ||                  ($rotationMethod == 'orthomaxRotation')             )                   ">
+            <Target action="show" conditionResult="true" option="vectorPlot"/>
+            <Target action="hide" conditionResult="false" option="vectorPlot"/>
+        </Dependency>
+    </Dependencies>
+    <CodeTemplate><![CDATA[
+ods noproctitle;
+
+## Are there any plots?
+#set ($plots=0)
+#if ($plotsCombo=='defaultPlotChoice' || $screePlot == "1" || $unrotatedLoadingsPlot == "1" || $rotatedLoadingsPlot == "1" || $prerotatedLoadingsPlot== "1") #set( $plots=1) #end
+
+#if ($plots == 1)
+ods graphics / imagemap=on;
+#end
+
+#if ($byVariables.size() > 0)
+proc sort data=$dataset
+   out=Work.SortTempTableSorted;
+   #if ($dataset.getWhereClause() != '')
+   where $dataset.getWhereClause();
+   #end
+   by #foreach( $item in $byVariables ) $item #end;
+run;
+proc factor data=Work.SortTempTableSorted 
+#else
+proc factor data=$dataset 
+#end
+
+#if ($useCommonFactorMethods == 1) #set($factorMethod = $commonFactorMethodsCombo)
+#else #set($factorMethod = $allFactorMethodsCombo)
+#end
+
+method=
+#if ($factorMethod=="alphaMethod")alpha
+#elseif ($factorMethod=="harrisMethod")harris
+#elseif ($factorMethod=="imageMethod")image
+#elseif ($factorMethod=="mlMethod")ml
+#elseif ($factorMethod=="princompMethod")principal
+#elseif ($factorMethod=="prinitMethod")prinit
+#elseif ($factorMethod=="ulsMethod")uls
+#end
+          
+#if ($rotationMethod == 'obliquePromaxRotation') prerotate=
+   #if     ($prerotationMethod == "orthomaxRotation") orthomax#if ($useGamma == 1)($gamma)#end
+   #elseif ($prerotationMethod == "biquartimaxRotation") 
+      #if ($prerotationType == 'orthogonalPrerotationChoice')biquartimax
+      #else obbiquartimax#end
+   #elseif ($prerotationMethod == "equamaxRotation") 
+      #if ($prerotationType == 'orthogonalPrerotationChoice')equamax
+      #else obequamax#end
+   #elseif ($prerotationMethod == "factorParsimaxRotation") 
+      #if ($prerotationType == 'orthogonalPrerotationChoice')factorparsimax
+      #else obfactorparsimax#end
+   #elseif ($prerotationMethod == "parsimaxRotation") 
+      #if ($prerotationType == 'orthogonalPrerotationChoice')parsimax
+      #else obparsimax#end
+   #elseif ($prerotationMethod == "quartimaxRotation") 
+      #if ($prerotationType == 'orthogonalPrerotationChoice')quartimax
+      #else obquartimax#end
+   #elseif ($prerotationMethod == "varimaxRotation") 
+      #if ($prerotationType == 'orthogonalPrerotationChoice')varimax
+      #else obvarimax#end
+   #elseif ($prerotationMethod == "obliqueBiquartiminRotation") biquartimin
+   #elseif ($prerotationMethod == "obliqueCovariminRotation") covarimin
+   ##elseif ($prerotationMethod == "obliqueBiquartimaxRotation") obbiquartimax
+   ##elseif ($prerotationMethod == "obliqueEquamaxRotation") obequamax
+   ##elseif ($prerotationMethod == "obliqueFactorParsimaxRotation") obfactorparsimax
+   ##elseif ($prerotationMethod == "obliqueParsimaxRotation") obparsimax
+   ##elseif ($prerotationMethod == "obliqueQuartimaxRotation") obquartimax
+   ##elseif ($prerotationMethod == "obliqueVarimaxRotation") obvarimax
+   #elseif ($prerotationMethod == "obliqueObliminRotation") oblimin#if ($useTau == 1)($tau)#end
+   #elseif ($prerotationMethod == "obliqueQuartiminRotation") quartimin
+   #elseif ($prerotationMethod == "noRotation") none
+   #end
+#end
+#if (!($rotationMethod == "noRotation")) rotate=
+   #if     ($rotationMethod == "orthomaxRotation") orthomax#if ($useGamma == 1)($gamma)#end
+   #elseif ($rotationMethod == "biquartimaxRotation")
+      #if ($rotationType == 'orthogonalRotationChoice')biquartimax
+      #else obbiquartimax#end
+   #elseif ($rotationMethod == "equamaxRotation")
+      #if ($rotationType == 'orthogonalRotationChoice')equamax
+      #else obequamax#end
+   #elseif ($rotationMethod == "factorParsimaxRotation") 
+      #if ($rotationType == 'orthogonalRotationChoice')factorparsimax
+      #else obfactorparsimax#end
+   #elseif ($rotationMethod == "parsimaxRotation") 
+      #if ($rotationType == 'orthogonalRotationChoice')parsimax
+      #else obparsimax#end
+   #elseif ($rotationMethod == "quartimaxRotation") 
+      #if ($rotationType == 'orthogonalRotationChoice')quartimax
+      #else obquartimax#end
+   #elseif ($rotationMethod == "varimaxRotation") 
+      #if ($rotationType == 'orthogonalRotationChoice')varimax
+      #else obvarimax#end
+   #elseif ($rotationMethod == "obliqueBiquartiminRotation") biquartimin
+   #elseif ($rotationMethod == "obliqueCovariminRotation") covarimin
+   ##elseif ($rotationMethod == "obliqueBiquartimaxRotation") obbiquartimax
+   ##elseif ($rotationMethod == "obliqueEquamaxRotation") obequamax
+   ##elseif ($rotationMethod == "obliqueFactorParsimaxRotation") obfactorparsimax
+   #elseif ($rotationMethod == "obliqueObliminRotation") oblimin#if ($useTau == 1)($tau)#end
+   ##elseif ($rotationMethod == "obliqueParsimaxRotation") obparsimax
+   ##elseif ($rotationMethod == "obliqueQuartimaxRotation") obquartimax
+   ##elseif ($rotationMethod == "obliqueVarimaxRotation") obvarimax
+   #elseif ($rotationMethod == "obliquePromaxRotation") promax#if ($usePromaxPower == 1)($promaxPower)#end
+   #elseif ($rotationMethod == "obliqueQuartiminRotation") quartimin
+   #elseif ($rotationMethod == "noRotation") none
+   #end
+
+   #if ( !($rotationMethod=='obliquePromaxRotation') && $useMaxRiter == 1)
+ riter=$maxRiter
+   #end  
+   
+#end
+#if (($factorMethod=='princompMethod' || $factorMethod=='imageMethod' || 
+     $factorMethod=='prinitMethod' || $factorMethod=='ulsMethod') && ($analyze == "analyzeCov")) cov
+#end
+#if (!($intercept == "1")) noint #end
+
+nfactors=
+#if ($ncomp == "ncomp_All")$analysisVariables.size()
+#elseif ($ncomp == "ncomp_1") 1
+#elseif ($ncomp == "ncomp_2") 2
+#elseif ($ncomp == "ncomp_3") 3
+#elseif ($ncomp == "ncomp_4") 4
+#elseif ($ncomp == "ncomp_5") 5
+#elseif ($ncomp == "ncomp_6") 6
+#elseif ($ncomp == "ncomp_7") 7
+#elseif ($ncomp == "ncomp_8") 8
+#elseif ($ncomp == "ncomp_9") 9
+#elseif ($ncomp == "ncomp_10") 10
+#else
+$ncompValue
+#end
+
+#if (!($factorMethod=='harrisMethod' || $factorMethod=='imageMethod'))
+   #if(!($priors=="defaultPriors"))
+priors=
+      #if ($priors=="onePriors") one
+      #elseif ($priors=="asmcPriors") asmc
+      #elseif ($priors=="maxPriors") max
+      #elseif ($priors=="randomPriors") random
+      #elseif ($priors=="smcPriors") smc
+      #end
+   #end
+#end
+
+#if ($statsCombo=='customStatsChoice')
+   #if ($simpleStats == 1) simple#end
+   #if ($corrs == 1) corr#end
+   #if ($residualCorrs == 1) residuals#end
+   #if ($eigenvectors == 1) eigenvectors#end
+   #if ($scoreCoeffs == 1) score#end
+   #if ($msa == 1) msa#end
+   #if ($reorder == 1) reorder#end
+   #if ($factorMethod=='mlMethod')
+      #if ($se == 1) stderr#end
+      #if ($confInt == 1) ci
+         #if     ($confidence == "confidence95")#set( $alpha = 0.05 )
+         #elseif ($confidence == "confidence99")#set( $alpha = 0.01 )
+         #elseif ($confidence == "confidence90")#set($alpha=0.1)
+         #else#set($alpha="%sysevalf((100-$confidenceValue)/100)")
+         #end
+alpha=$alpha
+      #end
+   #end
+   #if ($fuzz == 1) fuzz=$fuzzValue#end
+#end
+
+#if ($usePrefix == 1) prefix=$CTMUtil.toSASName($prefix)#end
+
+#if($normMethod == "normKaiser") norm=kaiser
+#elseif ($normMethod == "normWeight") norm=weight
+#elseif ($normMethod =="normCov") norm=cov
+#elseif ($normMethod =="normNone") norm=none
+#end
+#if($heywood == 1) heywood#end
+#if ($specifyMaxiter=='1') maxiter=$maxiter#end
+
+#if     ($plotsCombo=='noplotsCombo') plots=none
+#elseif ($plotsCombo=='defaultPlotChoice') plots=(scree)
+#elseif ($plotsCombo=='customPlotChoice')
+   #if ($plots == 1) plots
+      #if (($unrotatedLoadingsPlot == 1 || $rotatedLoadingsPlot == 1 || $prerotatedLoadingsPlot== 1) && 
+        (!($ncompToPlot == "ncomp_5") || $vectorPlot == 1))
+(
+         #if (!($ncompToPlot == "ncomp_5")) nplots=
+            #if     ($ncompToPlot == "ncomp_2") 2
+            #elseif ($ncompToPlot == "ncomp_3") 3
+            #elseif ($ncompToPlot == "ncomp_4") 4
+            #elseif ($ncompToPlot == "ncomp_5") 5
+            #elseif ($ncompToPlot == "ncomp_6") 6
+            #elseif ($ncompToPlot == "ncomp_7") 7
+            #elseif ($ncompToPlot == "ncomp_8") 8
+            #elseif ($ncompToPlot == "ncomp_9") 9
+            #elseif ($ncompToPlot == "ncomp_10") 10
+            #else
+$ncompToPlotValue
+            #end
+         #end
+         #if ($vectorPlot == 1) vector#end
+)
+      #end
+=(
+   #if ($screePlot == 1) scree#end
+   #if ($unrotatedLoadingsPlot == 1) initloadings#end
+   #if ($prerotatedLoadingsPlot== 1) preloadings#end
+   #if ($rotatedLoadingsPlot == 1) loadings#end
+)
+   #end
+#end
+
+#if ($scoresDS == 1) out=$scoresDSName#end
+#if ($statDS == 1) outstat=$statDSName#end
+;
+
+#if ($byVariables.size() == 0 && $dataset.getWhereClause() != '')
+   where $dataset.getWhereClause();
+#end
+
+#if ( $analysisVariables.size() > 0 )   
+   var #foreach( $item in $analysisVariables ) $item#end; 
+#end
+#if ( $partialVariables.size() > 0 )   
+   partial #foreach( $item in $partialVariables ) $item#end; 
+#end
+#if( $freqVariable.size() > 0 )
+   freq #foreach( $item in $freqVariable ) $item#end;
+#end
+#if( $weightVariable.size() > 0 )
+   weight #foreach( $item in $weightVariable ) $item#end;
+#end
+#if ($plotsCombo=='customPlotChoice' && $pathDiagram == 1)
+   pathdiagram 
+    #if ($useDiagramCriterion == 1)
+        #if (!($factorMethod == 'mlMethod' && $se == 1))fuzz=$diagramFuzzValue
+        #else alpha=#if($alpha=="alpha_05").05#elseif ($alpha=="alpha_01").01#elseif ($alpha=="alpha_10").10#else $alphaValue #end
+        #end
+    #end
+   ;
+#end
+#if( $byVariables.size() > 0 )
+   by #foreach( $item in $byVariables ) $item #end;
+#end
+run;
+
+#if( $byVariables.size() > 0 )
+   proc delete data=Work.SortTempTableSorted;run;
+#end
+]]></CodeTemplate>
+    
+
+
+
+
+
+<TemplateValues version="3.8">
+<![CDATA[
+{"usePromaxPower":"","prefix":"Fact","heywood":"","sasOS":"Linux LIN X64 3.10.0-1062.12.1.el7.x86_64","obliqueRotationChoice":"1","normMethod":"normKaiser","smcOnlyPriors":"smcPriors","maxRiter":"100","customPlotChoice":"Default and additional plots","ncomp_All":"All","customStatsChoice":"Default and additional statistics","communalitiesGroup":"Prior Communalities","screePlot":"1","maxiter":"30","asmcPriors":"Adjusted squared multiple correlation","confidenceSpecify":"Use custom value","byVariables":"","statDS":"","corrOnlyAnalyze":"analyzeCorr","smcPriors":"Squared multiple correlation","maxPriors":"Maximum absolute correlation","methodsGroup":"METHODS","rotationMethod":"varimaxRotation","rotatedLoadingsPlot":"1","intercept":"1","analysisVariables":"json:[{\"value\":\"Year\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"Month\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"Tsunami Event Validity\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"Tsunami Cause Code\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"Deposits\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"Number of Runups\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"Earthquake Magnitude\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"Latitude\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"Longitude\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"Maximum Water Height (m)\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"Tsunami Intensity\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"Total Damage Description\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"},{\"value\":\"After 1900\",\"type\":\"Numeric\",\"length\":8,\"format\":\"BEST12.\",\"informat\":\"BEST32.\",\"className\":\"RoleObject\"}]","analyze":"analyzeCorr","freqVariable":"","orthomaxRotation":"Orthomax","specifyMaxiter":"0","randomPriors":"Set to a random number between 0 and 1","ncompToPlotValue":"2","ncomp":"ncomp_5","defaultPriors":"Default","promaxPower":"3","extractionDetailsGroup":"Details","biquartimaxRotation":"Biquartimax","ncompValue":"2","scoreCoeffs":"1","rotationType":"obliqueRotationChoice","allFactorMethodsCombo":"princompMethod","mlMethod":"Maximum likelihood","prerotatedLoadingsPlot":"","useCommonFactorMethods":"1","rolesGroup":"ROLES","se":"","ncompToPlot":"ncomp_3","normNone":"None","harrisMethod":"Harris component analysis","obliquePromaxRotation":"Promax","ulsMethod":"Unweighted least squares factor analysis","scoresDS":"1","obliqueQuartiminRotation":"Quartimin","prinitMethod":"Iterated principal factor analysis","defaultStatsChoice":"Default statistics","statDSName":"work.Factor_stats","obliqueCovariminRotation":"Covarimin","prerotationInstruction":"Select type of rotation:","sasVersion":"9.47","loadingsPlotOptions":"Options for Loadings Plots","outputGroup":"OUTPUT DATA SETS","rotationGroup":"Rotation","rotationInstruction":"Select type of rotation:","msa":"","outputTab":"OUTPUT","dataset":{"librarytable":"PROJECT.TSUNAMI"},"gamma":"1","priors":"defaultPriors","fuzz":"","normKaiser":"Kaiser's normalization","factorParsimaxRotation":"Factor parsimax","imageMethod":"Image component analysis","scoresDSName":"PROJECT.TSUNAMI_FACTORS","useTau":"","dataTab":"DATA","obliqueObliminRotation":"Oblimin","orthogonalPrerotationChoice":"1","analyzeCov":"Covariances","rotationDetailsGroup":"Details","confInt":"","fuzzValue":"0.3","alphaValue":"","confidenceValue":"95","useGamma":"","confidence99":"99%","obliqueBiquartiminRotation":"Biquartimin","tau":"0","confidence95":"95%","alphaMethod":"Alpha factor analysis","commonFactorMethodsCombo":"princompMethod","equamaxRotation":"Equamax","confidence90":"90%","alphaSpecify":"Use custom value","eigenvectors":"0","quartimaxRotation":"Quartimax","varimaxRotation":"Varimax","plotsGroup":"PLOTS","ncomp_1":"1","usePrefix":"","prerotationMethod":"varimaxRotation","parsimaxRotation":"Parsimax","simpleStats":"","reorder":"1","analyzeCorr":"Correlations","extractionGroup":"Factor Extraction","onePriors":"Set to 1.0","vectorPlot":"","pathDiagram":"1","alpha":"alpha_05","defaultPlotChoice":"Default plots","alpha_10":"0.10","useMaxRiter":"0","residualCorrs":"","obliquePrerotationChoice":"0","ncomp_2":"2","ncomp_3":"3","statisticsGroup":"STATISTICS","otherRolesGroup":"ADDITIONAL ROLES","ncomp_4":"4","ncomp_5":"5","corrs":"","unrotatedLoadingsPlot":"","orthogonalRotationChoice":"0","ncompSpecify":"Use custom value","confidence":"confidence95","partialVariables":"","noplotsCombo":"No plots","statsCombo":"customStatsChoice","normWeight":"Cureton-Mulaik's normalization","plotsCombo":"customPlotChoice","princompMethod":"Principal component analysis","additionalStatsLabel":"Additional Statistics","patternPlot":"","dataGroup":"DATA","noRotation":"None","useDiagramCriterion":"1","weightVariable":"","alpha_01":"0.01","optionsTab":"OPTIONS","diagramFuzzValue":"0.6","normCov":"Rescale to represent covariances","alpha_05":"0.05","prerotationType":"orthogonalPrerotationChoice"}
+]]>
+</TemplateValues>
+</Task>
