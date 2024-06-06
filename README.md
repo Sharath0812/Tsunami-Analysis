@@ -33,4 +33,4 @@ The dataset was saved as Tsunami_Factors with 280 rows and 20 columns.
 4. Independent Sample t-test: Compared average Tsunami Intensity before and after 1900. The result showed no significant difference, implying no impact of climate change on tsunami intensity.
 
 ## How to open ctk file
-Download SAS Studio to view the task done on the dataset with selected options or code.
+Download SAS Studio to open the ctk files and view the analysis done on the dataset with selected options or code.
